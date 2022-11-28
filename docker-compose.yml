@@ -1,0 +1,36 @@
+services:
+  servicio-oauth:
+    container_name: servicio-oauth
+    image: georgegxx/servicio-oauth:latest
+    ports:
+      - "9100:9100"
+    restart: unless-stopped
+    networks:
+      - springcloud
+    #depends_on:
+    environment:
+      PORT: 9100
+      CONFIG_SERVER_URL: ec2-54-160-156-149.compute-1.amazonaws.com:8888
+      EUREKA_SERVER_URL: ec2-54-160-156-149.compute-1.amazonaws.com:8761
+      SERVICIO_USUARIOS_URL: ec2-3-235-138-189.compute-1.amazonaws.com
+
+  servicio-zuul-server:
+    container_name: servicio-zuul-server
+    image: georgegxx/servicio-zuul-server:latest
+    ports:
+      - "8090:8090"
+    restart: unless-stopped
+    networks:
+      - springcloud
+    depends_on:
+      - servicio-oauth
+    environment:
+      PORT: 8090
+      CONFIG_SERVER_URL: ec2-54-160-156-149.compute-1.amazonaws.com:8888
+      EUREKA_SERVER_URL: ec2-54-160-156-149.compute-1.amazonaws.com:8761
+      SERVICIO_ITEMS_URL: ec2-54-82-208-70.compute-1.amazonaws.com:8002
+      SERVICIO_PRODUCTOS_URL: ec2-54-82-208-70.compute-1.amazonaws.com
+      SERVICIO_USUARIOS_URL: ec2-3-235-138-189.compute-1.amazonaws.com
+
+networks:
+    springcloud:
